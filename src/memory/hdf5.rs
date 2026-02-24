@@ -70,7 +70,7 @@ impl Hdf5Memory {
 
     /// Create or open an HDF5 memory backend at the given path.
     pub fn with_path(path: PathBuf) -> anyhow::Result<Self> {
-        let hdf5 = if path.exists() {
+        let hdf5 = if path.exists() && std::fs::metadata(&path).map_or(false, |m| m.len() > 0) {
             HDF5Memory::open(&path).with_context(|| {
                 format!("failed to open HDF5 memory at {}", path.display())
             })?
@@ -81,12 +81,34 @@ impl Hdf5Memory {
             })?
         };
 
-        // For a fresh file there's no data to index; start empty.
-        let chunks: Vec<String> = Vec::new();
-        let tombstones: Vec<u8> = Vec::new();
+        // Hydrate in-memory state from existing HDF5 data.
+        let chunks = hdf5.cache.chunks.clone();
+        let tombstones = hdf5.cache.tombstones.clone();
         let bm25 = BM25Index::build(&chunks, &tombstones);
-        let entries: Vec<EntryMeta> = Vec::new();
-        let key_map: HashMap<String, usize> = HashMap::new();
+
+        let mut entries: Vec<EntryMeta> = Vec::with_capacity(chunks.len());
+        let mut key_map: HashMap<String, usize> = HashMap::with_capacity(chunks.len());
+
+        for i in 0..chunks.len() {
+            let key = hdf5.cache.source_channels.get(i).cloned().unwrap_or_default();
+            let tag = hdf5.cache.tags.get(i).cloned().unwrap_or_default();
+            let ts = hdf5.cache.timestamps.get(i).copied().unwrap_or(0.0);
+            let sid = hdf5.cache.session_ids.get(i).cloned().unwrap_or_default();
+            let deleted = tombstones.get(i).copied().unwrap_or(0) != 0;
+
+            if !deleted && !key.is_empty() {
+                key_map.insert(key.clone(), i);
+            }
+
+            entries.push(EntryMeta {
+                key,
+                content: chunks.get(i).cloned().unwrap_or_default(),
+                category: tag_to_category(&tag),
+                timestamp: ts,
+                session_id: if sid.is_empty() { None } else { Some(sid) },
+                deleted,
+            });
+        }
 
         Ok(Self {
             inner: Arc::new(Mutex::new(Inner {
