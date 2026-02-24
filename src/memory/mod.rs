@@ -6,6 +6,8 @@ pub mod hygiene;
 pub mod lucid;
 pub mod markdown;
 pub mod none;
+#[cfg(feature = "memory-hdf5")]
+pub mod hdf5;
 #[cfg(feature = "memory-postgres")]
 pub mod postgres;
 pub mod qdrant;
@@ -23,6 +25,8 @@ pub use backend::{
 pub use lucid::LucidMemory;
 pub use markdown::MarkdownMemory;
 pub use none::NoneMemory;
+#[cfg(feature = "memory-hdf5")]
+pub use hdf5::Hdf5Memory;
 #[cfg(feature = "memory-postgres")]
 pub use postgres::PostgresMemory;
 pub use qdrant::QdrantMemory;
@@ -36,6 +40,18 @@ use crate::config::{EmbeddingRouteConfig, MemoryConfig, StorageProviderConfig};
 use anyhow::Context;
 use std::path::Path;
 use std::sync::Arc;
+
+#[cfg(feature = "memory-hdf5")]
+fn build_hdf5_memory(workspace_dir: &Path) -> anyhow::Result<Box<dyn Memory>> {
+    Ok(Box::new(Hdf5Memory::new(workspace_dir)?))
+}
+
+#[cfg(not(feature = "memory-hdf5"))]
+fn build_hdf5_memory(_workspace_dir: &Path) -> anyhow::Result<Box<dyn Memory>> {
+    anyhow::bail!(
+        "memory backend 'hdf5' requested but this build was compiled without `memory-hdf5`; rebuild with `--features memory-hdf5`"
+    );
+}
 
 fn create_memory_with_builders<F, G>(
     backend_name: &str,
@@ -55,6 +71,7 @@ where
             Ok(Box::new(LucidMemory::new(workspace_dir, local)))
         }
         MemoryBackendKind::Postgres => postgres_builder(),
+        MemoryBackendKind::Hdf5 => build_hdf5_memory(workspace_dir),
         MemoryBackendKind::Qdrant | MemoryBackendKind::Markdown => {
             Ok(Box::new(MarkdownMemory::new(workspace_dir)))
         }
