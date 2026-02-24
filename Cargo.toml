@@ -100,7 +100,7 @@ prost = { version = "0.14", default-features = false, features = ["derive"], opt
 # Memory / persistence
 rusqlite = { version = "0.37", features = ["bundled"] }
 postgres = { version = "0.19", features = ["with-chrono-0_4"], optional = true }
-zeroclaw-memory = { path = "../zeroclaw-memory-hdf5/crates/zeroclaw-memory", optional = true, default-features = false, features = ["float16"] }
+edgehdf5-memory = { path = "../zeroclaw-memory-hdf5/crates/edgehdf5-memory", optional = true, default-features = false }
 chrono = { version = "0.4", default-features = false, features = ["clock", "std", "serde"] }
 chrono-tz = "0.10"
 cron = "0.15"
@@ -190,7 +190,7 @@ hardware = ["nusb", "tokio-serial"]
 channel-matrix = ["dep:matrix-sdk"]
 channel-lark = ["dep:prost"]
 memory-postgres = ["dep:postgres"]
-memory-hdf5 = ["dep:zeroclaw-memory"]
+memory-hdf5 = ["dep:edgehdf5-memory"]
 observability-otel = ["dep:opentelemetry", "dep:opentelemetry_sdk", "dep:opentelemetry-otlp"]
 peripheral-rpi = ["rppal"]
 # Browser backend feature alias used by cfg(feature = "browser-native")

@@ -1622,6 +1622,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "edgehdf5-memory"
+version = "1.93.0"
+dependencies = [
+ "byteorder",
+ "rustyhdf5",
+ "rustyhdf5-accel",
+ "rustyhdf5-format",
+ "rustyhdf5-io",
+ "serde",
+]
+
+[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4767,38 +4779,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "007d8adb5ddab6f8e3f491ac63566a7d5002cc7ed73901f72057943fa71ae1ae"
 
 [[package]]
-name = "purehdf5"
-version = "0.1.0"
-dependencies = [
- "purehdf5-format",
- "purehdf5-io",
-]
-
-[[package]]
-name = "purehdf5-accel"
-version = "0.1.0"
-
-[[package]]
-name = "purehdf5-format"
-version = "0.1.0"
-dependencies = [
- "byteorder",
- "crc32fast",
- "flate2",
- "rayon",
- "sha2",
-]
-
-[[package]]
-name = "purehdf5-io"
-version = "0.1.0"
-dependencies = [
- "libc",
- "memmap2",
- "purehdf5-format",
-]
-
-[[package]]
 name = "pxfm"
 version = "0.1.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5486,6 +5466,38 @@ name = "rustversion"
 version = "1.0.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
+
+[[package]]
+name = "rustyhdf5"
+version = "1.93.0"
+dependencies = [
+ "rustyhdf5-format",
+ "rustyhdf5-io",
+]
+
+[[package]]
+name = "rustyhdf5-accel"
+version = "1.93.0"
+
+[[package]]
+name = "rustyhdf5-format"
+version = "1.93.0"
+dependencies = [
+ "byteorder",
+ "crc32fast",
+ "flate2",
+ "rayon",
+ "sha2",
+]
+
+[[package]]
+name = "rustyhdf5-io"
+version = "1.93.0"
+dependencies = [
+ "libc",
+ "memmap2",
+ "rustyhdf5-format",
+]
 
 [[package]]
 name = "ruzstd"
@@ -8072,6 +8084,7 @@ dependencies = [
  "cron",
  "dialoguer",
  "directories",
+ "edgehdf5-memory",
  "fantoccini",
  "futures-util",
  "glob",
@@ -8140,19 +8153,6 @@ dependencies = [
  "webpki-roots 1.0.6",
  "which",
  "wiremock",
- "zeroclaw-memory",
-]
-
-[[package]]
-name = "zeroclaw-memory"
-version = "0.1.0"
-dependencies = [
- "byteorder",
- "half",
- "purehdf5",
- "purehdf5-accel",
- "purehdf5-format",
- "purehdf5-io",
 ]
 
 [[package]]

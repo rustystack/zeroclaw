@@ -8,7 +8,7 @@ use parking_lot::Mutex;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use zeroclaw_memory::{
+use edgehdf5_memory::{
     bm25::BM25Index,
     AgentMemory, HDF5Memory,
     MemoryConfig as Hdf5Config,
